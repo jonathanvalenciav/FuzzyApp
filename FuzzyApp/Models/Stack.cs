@@ -9,12 +9,14 @@ namespace FuzzyApp.Models
         private int size;
         private int top;
         private List<char> stack;
+        private List<Preposition> evaluationStack;
         
         public Stack(int size)
         {
             this.size = size;
             this.top = 0;
             stack = new List<char>();
+            evaluationStack = new List<Preposition>();
         }
 
         public bool isFull()
@@ -30,6 +32,11 @@ namespace FuzzyApp.Models
         public void push(char item)
         {
             this.stack.Add(item);
+        }
+
+        public void push(Preposition item)
+        {
+            this.evaluationStack.Add(item);
         }
 
         public char pop()
