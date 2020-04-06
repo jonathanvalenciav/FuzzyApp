@@ -15,14 +15,13 @@ namespace FuzzyApp.Services
         public const char CLOSING_GROUPER_SYMBOL = ')';
         public const int MAX_PREPOSITIONS_ALLOWED = 3;
         public const int MAX_USE_PREPOSITIONS_ALLOWED = 6;
-        public const int MIN_USE_PREPOSITIONS_ALLOWED = 2;
 
         public static bool validateExpression(string input)
         {
             bool isValidExpression;
             string postfixExpression = convertInfixToPostfix(input);
             bool isValidAmountPrepositions = (getOnlyPrepositions(postfixExpression).Count <= MAX_PREPOSITIONS_ALLOWED) ? true : false;
-            bool isValidUsePrepositions = (getExpressionWithoutOperators(postfixExpression).Length <= MAX_USE_PREPOSITIONS_ALLOWED && getExpressionWithoutOperators(postfixExpression).Length >= MIN_USE_PREPOSITIONS_ALLOWED) ? true : false;
+            bool isValidUsePrepositions = (getExpressionWithoutOperators(postfixExpression).Length <= MAX_USE_PREPOSITIONS_ALLOWED) ? true : false;
             bool isValidSymbolTypeInARow = validateSymbolTypeInARow(input);
             isValidExpression = (isValidAmountPrepositions && isValidUsePrepositions && isValidSymbolTypeInARow) ? true : false;
 
