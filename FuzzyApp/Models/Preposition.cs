@@ -17,6 +17,16 @@ namespace FuzzyApp.Models
             return identifier;
         }
 
+        public List<bool> GetAllTruthValues()
+        {
+            return truthValues;
+        }
+
+        public bool GetTruthValueByPosition(int position)
+        {
+            return truthValues[position];
+        }
+
         public void pushThurthValue(bool thurthValue)
         {
             this.truthValues.Add(thurthValue);

@@ -1,6 +1,7 @@
 ﻿@{
     ViewBag.Title = "Classics Sets";
     string globalPostfix = (string)System.Web.HttpContext.Current.Session["Postfix"];
+    FuzzyApp.Models.Preposition result = (FuzzyApp.Models.Preposition)System.Web.HttpContext.Current.Session["Result"];
 
 }
 
@@ -14,16 +15,30 @@
 
 <div class="row">
     <div class="alert alert-success" role="alert">
-        <p><strong>Hi dear User!</strong> If the element you want to add is already in the set, it won't be added again.</p>
-        <p>Besides if you want to add multiple elements use the character comma (,) to separate each of them.</p>
+        <p><i class="material-icons" style="font-size: 12pt; text-align: center;">warning</i><strong> Hi dear User!</strong> You can to infer the truth tables based on a logic expression. Rules of use: </p>
+        <p><strong>1. </strong> You can to use three letters for prepositions. Any letter.</p>
+        <p><strong>2. </strong> The logic operators are: </p>
+        <ul>
+            <li><strong>&</strong> represents the operator <strong>AND</strong></li>
+            <li><strong>|</strong> represents the operator <strong>OR</strong></li>
+            <li><strong>></strong> represents the operator <strong>IMPLICATION</strong></li>
+            <li><strong>=</strong> represents the operator <strong>DOUBLE IMPLICATION</strong></li>
+        </ul>
+        <p><strong>3. </strong> You can to use the grouping signs to set priority. Grouping signs are: <strong>()</strong> </p>
+        <p><strong>4. </strong> You can't to use two prepositions or operators continuous. Like: <strong>pp</strong> or <strong>>&</strong> </p>
     </div>
 
-    <div class="col-md-5 align-self-center">
+    <div style="@(ViewBag.ShowError == "show" ? "display:block" : "display:none")" class="alert alert-danger" role="alert">
+        <h4><strong><i class="material-icons" style="font-size: 13pt; text-align: center;">warning</i> Logic expression error</strong></h4>
+        <p>@ViewBag.Message</p>
+    </div>
+
+    <div class="col-md-9 align-self-center ">
         @using (Html.BeginForm("evaluateLogicExpression", "ClassicsSets", FormMethod.Post, new { @class = "form-inline" }))
         {
             <div class="form-group">
                 <label for="logicExpression" class="sr-only">Write your logic expression: </label>
-                <input type="text" style="width: 800px" class="form-control" name="logicExpression" id="logicExpression" placeholder="Write a logic expression">
+                <input type="text" style="width: 800px; font-family: Consolas; font-size: 13pt;" class="form-control" name="logicExpression" id="logicExpression" placeholder="Write a logic expression">
             </div>
             <button type="submit" class="btn btn-primary">Evaluate</button>
         }
@@ -33,8 +48,22 @@
 <hr />
 
 <div class="row">
+    
     <div class="col-md-6">
-        <h1>@globalPostfix</h1>
+        <h3>@globalPostfix</h3>
     </div>
 </div>
+
+<div class="row">
+    <h5><strong>Result logic expression</strong></h5>
+    <div class="col-md-6">
+
+        @foreach (var itemResult in result.GetAllTruthValues())
+        {
+            <h5>@itemResult</h5>
+        }
+    </div>
+</div>
+
+
 

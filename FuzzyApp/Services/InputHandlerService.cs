@@ -1,8 +1,10 @@
-﻿using FuzzyApp.Commons;
+﻿using ComplexApp.Services;
+using FuzzyApp.Commons;
 using FuzzyApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using static FuzzyApp.Commons.OperationType;
 
 namespace FuzzyApp.Services
 {
@@ -12,14 +14,24 @@ namespace FuzzyApp.Services
         public const string OPERATOR_EXPRESSION = "[&|=>]";
         public const char CLOSING_GROUPER_SYMBOL = ')';
         public const int MAX_PREPOSITIONS_ALLOWED = 3;
+        public const int MAX_USE_PREPOSITIONS_ALLOWED = 6;
+        public static bool validateExpression(string input)
+        {
+            bool isValidExpression;
+            string postfixExpression = convertInfixToPostfix(input);
+            bool isValidAmountPrepositions = (getOnlyPrepositions(postfixExpression).Count <= MAX_PREPOSITIONS_ALLOWED) ? true : false;
+            bool isValidUsePrepositions = (getExpressionWithoutOperators(postfixExpression).Length <= MAX_USE_PREPOSITIONS_ALLOWED) ? true : false;
+
+            isValidExpression = (isValidAmountPrepositions && isValidUsePrepositions) ? true : false;
+
+            return isValidExpression;
+        }
 
         public static void processInput(string input)
         {
             string standardizedInput = standardizeInput(input);
-            string postfixExpression = convertInfixToPostfix(standardizedInput);
+            string postfixExpression = convertInfixToPostfix(standardizedInput);            
             evaluatePostfixExpression(postfixExpression);
-            //int amountPrepositions = prepositions.Count;
-            //bool isValidAmountPrepositions = amountPrepositions <= MAX_PREPOSITIONS_ALLOWED ? true : false;
 
             System.Web.HttpContext.Current.Session["Postfix"] = postfixExpression;
         }
@@ -29,9 +41,10 @@ namespace FuzzyApp.Services
             return input.Replace(Constants.BLANK_SPACE, Constants.EMPTY_STRING);
         }
 
+
         public static List<char> getOnlyPrepositions(string input)
         {
-            string expressionWithoutOperators = Regex.Replace(input, OPERATOR_EXPRESSION, Constants.EMPTY_STRING);
+            string expressionWithoutOperators = getExpressionWithoutOperators(input);
             List<char> existingPrepositions = new List<char>();
 
             foreach (char preposition in expressionWithoutOperators)
@@ -43,6 +56,10 @@ namespace FuzzyApp.Services
             }
 
             return existingPrepositions;
+        }
+
+        public static string getExpressionWithoutOperators(string input) {
+            return Regex.Replace(input, OPERATOR_EXPRESSION, Constants.EMPTY_STRING);
         }
 
         public static string convertInfixToPostfix(string infix) {
@@ -96,38 +113,39 @@ namespace FuzzyApp.Services
         {
             List<Preposition> prepositions = new List<Preposition>();
             bool thurthValue;
-            int razon = 0;
+            int frequency = 0;
             int thurthValuesAmount = 0;
-            int cont = 1;
+            int row = 1;
             int i = 0;
-            int div = 2;
+            int trueNumber = 2;
 
             thurthValuesAmount = Convert.ToInt32(Math.Pow(2, prepositionsIdentifiers.Count));
 
-            foreach(char prepositionIdentifier in prepositionsIdentifiers) {
+            foreach (char prepositionIdentifier in prepositionsIdentifiers)
+            {
                 Preposition preposition = new Preposition(prepositionIdentifier);
                 i = 0;
-                cont = 1;
-                razon = thurthValuesAmount / div;
+                row = 1;
+                frequency = thurthValuesAmount / trueNumber;
                 do
                 {
-                    for (int fil = i; fil < i + razon; fil++)
+                    for (int fil = i; fil < i + frequency; fil++)
                     {
-                        thurthValue = cont % 2 != 0 ? true : false;
+                        thurthValue = row % 2 != 0 ? true : false;
                         preposition.pushThurthValue(thurthValue);
                     }
-                    cont++;
-                    i += razon;
+                    row++;
+                    i += frequency;
                 } while (i < thurthValuesAmount);
 
                 prepositions.Add(preposition);
-                div *= 2;
+                trueNumber *= 2;
             }
 
             return prepositions;
         }
 
-        public static string evaluatePostfixExpression(string postfixExpression)
+        public static void evaluatePostfixExpression(string postfixExpression)
         {
             Stack evaluateStack = new Stack(20);
             List<char> prepositionsIdentifiers = getOnlyPrepositions(postfixExpression);
@@ -140,7 +158,10 @@ namespace FuzzyApp.Services
                 switch (symbolType)
                 {
                     case SymbolType.OPERATOR:
-                        //OPERAR ENTRE PREPOSICIONES DE LA PILA
+                        Preposition prepositionTwo = evaluateStack.pop();
+                        Preposition prepositionOne = evaluateStack.pop();
+                        evaluateStack.push(operatePreposition(symbol, (prepositionOne, prepositionTwo)));
+                        
                         break;
                     case SymbolType.PREPOSITION:
                         Preposition preposition = prepositions.Find(currentPreposition => currentPreposition.GetIdentifier().Equals(symbol));
@@ -148,7 +169,26 @@ namespace FuzzyApp.Services
                         break;
                 }
             }
-            return "";
+            System.Web.HttpContext.Current.Session["Result"] = evaluateStack.getLastPreposition();
+        }
+
+        public static Preposition operatePreposition(char symbol, (Preposition, Preposition) prepositions)
+        {
+            Operation operation = GetOperationType(symbol);  
+
+            switch (operation)
+            {
+                case Operation.AND:
+                    return ClassicsSetsService.operatorAnd(prepositions);
+                case Operation.OR:
+                    return ClassicsSetsService.operatorOr(prepositions);
+                case Operation.IMPLICATION:
+                    return ClassicsSetsService.operatorImplication(prepositions);
+                case Operation.DOUBLE_IMPLICATION:
+                    return ClassicsSetsService.operatorDoubleImplication(prepositions);
+                default:
+                    return null;
+            }
         }
     }
 }

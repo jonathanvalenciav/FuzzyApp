@@ -36,12 +36,18 @@ namespace FuzzyApp.Models
 
         public void push(Preposition item)
         {
-            this.evaluationStack.Add(item);
+            this.evaluationStack.Insert(top, item);
+            top++;
         }
 
-        public char pop()
+        public Preposition pop()
         {
-            return (top <= 0) ? Constants.ZERO_ELEMENT : stack[--top];
+            return (top <= 0) ? null : evaluationStack[--top];
+        }
+
+        public Preposition getLastPreposition()
+        {
+            return evaluationStack[top - 1];
         }
 
         public string getAllItems()
@@ -54,6 +60,7 @@ namespace FuzzyApp.Models
                 stackedItems += item;
             }
 
+            this.top = 0;
             this.stack.Clear();
 
             return stackedItems;

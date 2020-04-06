@@ -1,39 +1,64 @@
-﻿using System.Collections.Generic;
+﻿using FuzzyApp.Commons;
+using FuzzyApp.Models;
+using System.Collections.Generic;
 
 namespace ComplexApp.Services
 {
     public class ClassicsSetsService
     {
-        public static List<bool> operatorAnd((List<bool>, List<bool>) prepositions)
+        public static Preposition operatorAnd((Preposition, Preposition) prepositions)
         {
-            List<bool> evaluationResult = new List<bool>();
+            Preposition evaluationResult = new Preposition(Constants.RESULT_OPERATION_PARTIAL);
+            int truthValuesAmount = prepositions.Item1.GetAllTruthValues().Count;
 
-            for (int position = 0; position < prepositions.Item1.Count; position++)
+            for (int position = 0; position < truthValuesAmount; position++)
             {
-                evaluationResult.Add(prepositions.Item1[position] & prepositions.Item2[position]);
+                evaluationResult.pushThurthValue(prepositions.Item1.GetTruthValueByPosition(position) && prepositions.Item2.GetTruthValueByPosition(position));
             }
 
             return evaluationResult;
         }
 
-        public static List<bool> operatorOr((List<bool>, List<bool>) prepositions)
+        public static Preposition operatorOr((Preposition, Preposition) prepositions)
         {
-            List<bool> evaluationResult = new List<bool>();
+            Preposition evaluationResult = new Preposition(Constants.RESULT_OPERATION_PARTIAL);
+            int truthValuesAmount = prepositions.Item1.GetAllTruthValues().Count;
 
-            return null;
+            for (int position = 0; position < truthValuesAmount; position++)
+            {
+                evaluationResult.pushThurthValue(prepositions.Item1.GetTruthValueByPosition(position) || prepositions.Item2.GetTruthValueByPosition(position));
+            }
+
+            return evaluationResult;
         }
 
-        public static List<bool> operatorImplication((List<bool>, List<bool>) prepositions)
+        public static Preposition operatorImplication((Preposition, Preposition) prepositions)
         {
-            List<bool> evaluationResult = new List<bool>();
+            Preposition evaluationResult = new Preposition(Constants.RESULT_OPERATION_PARTIAL);
+            int truthValuesAmount = prepositions.Item1.GetAllTruthValues().Count;
+            bool truthValueResult;
 
-            return null;
+            for (int position = 0; position < truthValuesAmount; position++)
+            {
+                truthValueResult = (prepositions.Item1.GetTruthValueByPosition(position).Equals(true) & prepositions.Item2.GetTruthValueByPosition(position).Equals(false)) ? false : true;
+                evaluationResult.pushThurthValue(truthValueResult);
+            }
+
+            return evaluationResult;
         }
-        public static List<bool> operatorDoubleImplication((List<bool>, List<bool>) prepositions)
+        public static Preposition operatorDoubleImplication((Preposition, Preposition) prepositions)
         {
-            List<bool> evaluationResult = new List<bool>();
+            Preposition evaluationResult = new Preposition(Constants.RESULT_OPERATION_PARTIAL);
+            int truthValuesAmount = prepositions.Item1.GetAllTruthValues().Count;
+            bool truthValueResult;
 
-            return null;
+            for (int position = 0; position < truthValuesAmount; position++)
+            {
+                truthValueResult = (prepositions.Item1.GetTruthValueByPosition(position).Equals(prepositions.Item2.GetTruthValueByPosition(position))) ? true : false;
+                evaluationResult.pushThurthValue(truthValueResult);
+            }
+
+            return evaluationResult;
         }
     }
 }
