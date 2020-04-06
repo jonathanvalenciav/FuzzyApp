@@ -15,14 +15,16 @@ namespace FuzzyApp.Services
         public const char CLOSING_GROUPER_SYMBOL = ')';
         public const int MAX_PREPOSITIONS_ALLOWED = 3;
         public const int MAX_USE_PREPOSITIONS_ALLOWED = 6;
+        public const int MIN_USE_PREPOSITIONS_ALLOWED = 2;
+
         public static bool validateExpression(string input)
         {
             bool isValidExpression;
             string postfixExpression = convertInfixToPostfix(input);
             bool isValidAmountPrepositions = (getOnlyPrepositions(postfixExpression).Count <= MAX_PREPOSITIONS_ALLOWED) ? true : false;
-            bool isValidUsePrepositions = (getExpressionWithoutOperators(postfixExpression).Length <= MAX_USE_PREPOSITIONS_ALLOWED) ? true : false;
-
-            isValidExpression = (isValidAmountPrepositions && isValidUsePrepositions) ? true : false;
+            bool isValidUsePrepositions = (getExpressionWithoutOperators(postfixExpression).Length <= MAX_USE_PREPOSITIONS_ALLOWED && getExpressionWithoutOperators(postfixExpression).Length >= MIN_USE_PREPOSITIONS_ALLOWED) ? true : false;
+            bool isValidSymbolTypeInARow = validateSymbolTypeInARow(input);
+            isValidExpression = (isValidAmountPrepositions && isValidUsePrepositions && isValidSymbolTypeInARow) ? true : false;
 
             return isValidExpression;
         }
@@ -41,6 +43,26 @@ namespace FuzzyApp.Services
             return input.Replace(Constants.BLANK_SPACE, Constants.EMPTY_STRING);
         }
 
+        public static bool validateSymbolTypeInARow(string input)
+        {
+            bool result = true;
+            char[] inputTochar = input.ToCharArray();
+            int n = 0;
+            for(int i=1; i < inputTochar.Length; i++)
+            {
+                SymbolType symbolType1 = getSymbolType(inputTochar[i-1]);
+                SymbolType symbolType2 = getSymbolType(inputTochar[i]);
+                if (symbolType1 == symbolType2 && symbolType1 != SymbolType.CLOSING_GROUPER && symbolType2 != SymbolType.CLOSING_GROUPER && symbolType1 != SymbolType.UNDEFINED && symbolType2 != SymbolType.UNDEFINED)
+                {
+                    n++;
+                }
+            }
+            if (n != 0)
+            {
+                result = false;
+            }
+            return result;
+        }
 
         public static List<char> getOnlyPrepositions(string input)
         {
@@ -86,6 +108,7 @@ namespace FuzzyApp.Services
                 }
             }
             return postfix += postfixStack.getAllItems();
+            
         }
 
         public static SymbolType getSymbolType(char symbol)
@@ -174,8 +197,8 @@ namespace FuzzyApp.Services
 
         public static Preposition operatePreposition(char symbol, (Preposition, Preposition) prepositions)
         {
-            Operation operation = GetOperationType(symbol);  
-
+            Operation operation = GetOperationType(symbol);
+           
             switch (operation)
             {
                 case Operation.AND:
