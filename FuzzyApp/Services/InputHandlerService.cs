@@ -1,4 +1,5 @@
-﻿using ComplexApp.Services;
+﻿using ComplexApp.Controllers;
+using ComplexApp.Services;
 using FuzzyApp.Commons;
 using FuzzyApp.Models;
 using System;
@@ -160,8 +161,10 @@ namespace FuzzyApp.Services
                     case SymbolType.OPERATOR:
                         Preposition prepositionTwo = evaluateStack.pop();
                         Preposition prepositionOne = evaluateStack.pop();
-                        evaluateStack.push(operatePreposition(symbol, (prepositionOne, prepositionTwo)));
-                        
+                        Preposition prepositionResult = operatePreposition(symbol, (prepositionOne, prepositionTwo));
+
+                        evaluateStack.push(prepositionResult);
+                        ClassicsSetsController.resultComplete.Add(prepositionResult);
                         break;
                     case SymbolType.PREPOSITION:
                         Preposition preposition = prepositions.Find(currentPreposition => currentPreposition.GetIdentifier().Equals(symbol));

@@ -1,23 +1,28 @@
 ﻿using FuzzyApp.Commons;
 using FuzzyApp.Models;
 using FuzzyApp.Services;
+using System.Collections.Generic;
 using System.Web.Mvc;
 
 namespace ComplexApp.Controllers
 {
     public class ClassicsSetsController : Controller
     {
+        public static List<Preposition> resultComplete;
+        public static string logicExpressionToShow;
         public ActionResult ClassicsSets()
         {
-            var globalPostfix = (string)System.Web.HttpContext.Current.Session["Postfix"];
-            System.Web.HttpContext.Current.Session["Postfix"] = Constants.EMPTY_STRING;
-            System.Web.HttpContext.Current.Session["Result"] = new Preposition('.');
+            System.Web.HttpContext.Current.Session["ResultComplete"] = new List<Preposition>();
+            resultComplete = new List<Preposition>();
 
             return View();
         }
 
         public ActionResult evaluateLogicExpression(string logicExpression)
         {
+            resultComplete.Clear();
+            logicExpressionToShow = logicExpression;
+
             if (InputHandlerService.validateExpression(logicExpression))
             {
                 InputHandlerService.processInput(logicExpression);

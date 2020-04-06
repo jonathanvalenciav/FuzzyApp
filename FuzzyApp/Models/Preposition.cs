@@ -6,6 +6,9 @@ namespace FuzzyApp.Models
     {   
         private char identifier;
         private List<bool> truthValues;
+        private Preposition firstPreposition;
+        private Preposition secondPreposition;
+        private char operatorResult;        
 
         public Preposition(char identifier) {
             this.identifier = identifier;
@@ -31,5 +34,28 @@ namespace FuzzyApp.Models
         {
             this.truthValues.Add(thurthValue);
         }
+
+        public void SetOperationSource(Preposition firstPreposition, Preposition secondPreposition, char operatorResult)
+        {
+            this.firstPreposition = firstPreposition;
+            this.secondPreposition = secondPreposition;
+            this.operatorResult = operatorResult;
+        }
+
+        public char GetOperator()
+        {
+            return this.operatorResult;
+        }
+
+        public Preposition GetFirstPreposition()
+        {
+            return this.firstPreposition;
+        }
+
+        public Preposition GetSecondPreposition()
+        {
+            return this.secondPreposition;
+        }
+
     }
 }

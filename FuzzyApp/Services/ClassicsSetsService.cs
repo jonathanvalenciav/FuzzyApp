@@ -1,6 +1,5 @@
 ﻿using FuzzyApp.Commons;
 using FuzzyApp.Models;
-using System.Collections.Generic;
 
 namespace ComplexApp.Services
 {
@@ -14,6 +13,7 @@ namespace ComplexApp.Services
             for (int position = 0; position < truthValuesAmount; position++)
             {
                 evaluationResult.pushThurthValue(prepositions.Item1.GetTruthValueByPosition(position) && prepositions.Item2.GetTruthValueByPosition(position));
+                evaluationResult.SetOperationSource(prepositions.Item1, prepositions.Item2, Constants.OPERATOR_AND);
             }
 
             return evaluationResult;
@@ -27,6 +27,7 @@ namespace ComplexApp.Services
             for (int position = 0; position < truthValuesAmount; position++)
             {
                 evaluationResult.pushThurthValue(prepositions.Item1.GetTruthValueByPosition(position) || prepositions.Item2.GetTruthValueByPosition(position));
+                evaluationResult.SetOperationSource(prepositions.Item1, prepositions.Item2, Constants.OPERATOR_OR);
             }
 
             return evaluationResult;
@@ -41,6 +42,7 @@ namespace ComplexApp.Services
             for (int position = 0; position < truthValuesAmount; position++)
             {
                 truthValueResult = (prepositions.Item1.GetTruthValueByPosition(position).Equals(true) & prepositions.Item2.GetTruthValueByPosition(position).Equals(false)) ? false : true;
+                evaluationResult.SetOperationSource(prepositions.Item1, prepositions.Item2, Constants.OPERATOR_IMPLICATION);
                 evaluationResult.pushThurthValue(truthValueResult);
             }
 
@@ -55,6 +57,7 @@ namespace ComplexApp.Services
             for (int position = 0; position < truthValuesAmount; position++)
             {
                 truthValueResult = (prepositions.Item1.GetTruthValueByPosition(position).Equals(prepositions.Item2.GetTruthValueByPosition(position))) ? true : false;
+                evaluationResult.SetOperationSource(prepositions.Item1, prepositions.Item2, Constants.OPERATOR_DOUBLE_IMPLICATION);
                 evaluationResult.pushThurthValue(truthValueResult);
             }
 
